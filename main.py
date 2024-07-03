@@ -40,11 +40,47 @@ def get_links(text): #функция для получения ссылок по
         time.sleep(1) #чтобы не перегружать сервер
 
 def get_vacancies(link): #функция для получения данных вакансий, мы передаём ей ссылку
-    pass
-
+    ua = fake_useragent.UserAgent()
+    data = requests.get(
+        url = link,
+        headers = {"user-agent":ua.random}
+    )
+    if data.status_code != 200:
+        return
+    thesoup = BeautifulSoup(data.content, "lxml")
+    #вытаскиваем название вакансии
+    try:
+        name = thesoup.find(attrs={"class":"vacancy-name--c1Lay3KouCl7XasYakLk serp-item__title-link"}).text
+    except:
+        name = "" #Если произошло исключение, то в заголовок пишем пустую строку
+    #создаём объект вакансии и пишем в него данные, которые вытаскиваем из ссылок, которые запарсили
+    try:
+        salary = thesoup.find(attrs={"class":"magritte-text___pbpft_3-0-9 magritte-text_style-primary___AQ7MW_3-0-9 magritte-text_typography-label-1-regular___pi3R-_3-0-9"}).text.replace("\xa0","")
+    except:
+        salary = ""
+    try:
+        job_experience = thesoup.find(attrs={"data-qa":"vacancy-experience"}).text
+    except:
+        job_experience = ""
+    vacancy = {
+        "name": name,
+        "salary": salary,
+        "job experience": job_experience
+    }
+    return vacancy # вернём объект вакансии из функции
 
 if __name__ == "__main__": #данное условие, т е данный блок, кода выполняется только когда мы запускаем данный файл напрямую в качестве скрипта, а не при импорте в качестве модуля, другие же функции, которые мы писали выше могут быть импортированы и использованы в других программах в качестве модулей
-    #если уловие выполняется, запускаем функцию и передаём в неё текст "python"
-    for l in get_links("python"): #выводим все ссылки по данному запросу в командную строку
-        print(l)
-   
+    # na=0
+    # #если уловие выполняется, запускаем функцию и передаём в неё текст "python"
+    
+    # for l in get_links("python"): #выводим все ссылки по данному запросу в командную строку
+    #     print(get_vacancies(l))#каждую ссылку помещаем в функцию для вытаскивания из ссылок информации о вакансии
+    #     #time.sleep(1)#делаем паузу между запросами
+    #     na+=1
+    # print(na)
+    data = [] #создаём объект и хаполняем его в цикле
+    for l in get_links("python"):
+        data.append(get_vacancies(l))
+        time.sleep(1)
+        with open("data.json", "w", encoding="utf-8") as f: #сохраняем объект с данными в файл при помощи json.dump
+            json.dump(data, f, indent=4, ensure_ascii=False)
