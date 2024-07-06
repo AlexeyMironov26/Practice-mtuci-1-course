@@ -98,8 +98,6 @@ def get_vacancies_from_hhru(search_query):
     vacancies_data = [] #создаём объект и заполняем его в цикле
     for l in get_links(search_query):
         vacancies_data.append(get_vacancies(l))
-#     print(get_vacancies(l))
-# print(vacancies_data[1:4])
     time.sleep(1)
     return vacancies_data if vacancies_data else None
 
