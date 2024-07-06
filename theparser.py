@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import fake_useragent
 import time
+import lxml
 import json
 
 def get_links(text): #функция для получения ссылок по запросу, мы передаём ей текст запроса для поиска
@@ -62,14 +63,21 @@ def get_vacancies(link): #функция для получения данных 
         job_experience = thesoup.find(attrs={"data-qa":"vacancy-experience"}).text
     except:
         job_experience = ""
+    try:
+        schedule = thesoup.find(attrs={"data-qa":"vacancy-view-employment-mode"}).text
+    except:
+        schedule = ""
     vacancy = {
         "name": name,
         "salary": salary,
-        "job experience": job_experience
+        "job_experience": job_experience,
+        "schedule": schedule,
+        "link": link
+
     }
     return vacancy # вернём объект вакансии из функции
 
-if __name__ == "__main__": #данное условие, т е данный блок, кода выполняется только когда мы запускаем данный файл напрямую в качестве скрипта, а не при импорте в качестве модуля, другие же функции, которые мы писали выше могут быть импортированы и использованы в других программах в качестве модулей
+#if __name__ == "__main__": #данное условие, т е данный блок, кода выполняется только когда мы запускаем данный файл напрямую в качестве скрипта, а не при импорте в качестве модуля, другие же функции, которые мы писали выше могут быть импортированы и использованы в других программах в качестве модулей
     # na=0
     # #если уловие выполняется, запускаем функцию и передаём в неё текст "python"
     
@@ -78,9 +86,21 @@ if __name__ == "__main__": #данное условие, т е данный бл
     #     #time.sleep(1)#делаем паузу между запросами
     #     na+=1
     # print(na)
-    data = [] #создаём объект и хаполняем его в цикле
-    for l in get_links("python"):
-        data.append(get_vacancies(l))
-        time.sleep(1)
-        with open("data.json", "w", encoding="utf-8") as f: #сохраняем объект с данными в файл при помощи json.dump
-            json.dump(data, f, indent=4, ensure_ascii=False)
+    # print("Введите запрос для поиска вакансий")
+    # nameofv=input()
+    # data = [] #создаём объект и заполняем его в цикле
+    # for l in get_links(search_query):
+    #     data.append(get_vacancies(l))
+    #     time.sleep(1)
+    #     with open("data.json", "w", encoding="utf-8") as f: #сохраняем объект с данными в файл при помощи json.dump
+    #         json.dump(data, f, indent=4, ensure_ascii=False)
+def get_vacancies_from_hhru(search_query):
+    vacancies_data = [] #создаём объект и заполняем его в цикле
+    for l in get_links(search_query):
+        vacancies_data.append(get_vacancies(l))
+#     print(get_vacancies(l))
+# print(vacancies_data[1:4])
+    time.sleep(1)
+    return vacancies_data if vacancies_data else None
+
+#print(get_vacancies_from_hhru("python-разработчик"))

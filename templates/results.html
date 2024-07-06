@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты</title>
+</head>
+<body>
+    <h1>Результат запроса и фильтрация</h1>
+
+    <a href="{{ url_for('search') }}">Поиск</a>
+    <a href="{{ url_for('results') }}">Результаты</a>
+
+    <form method="POST">
+        <label for="job_experience">Опыт:</label>
+        <select id="job_experience" name="job_experience">
+            <option value="">Все</option>
+            <option value="не требуется" {% if job_experience == 'не требуется' %}selected{% endif %}>не требуется</option>
+            <option value="1–3 года" {% if job_experience == '1–3 года' %}selected{% endif %}>1–3 года</option>
+            <option value="3–6 лет" {% if job_experience == '3–6 лет' %}selected{% endif %}>3–6 лет</option>
+            <option value="более 6 лет" {% if job_experience == 'более 6 лет' %}selected{% endif %}>более 6 лет</option>
+        </select>
+
+        <label for="salary">Зарплата:</label>
+        <select id="salary" name="salary">
+            <option value="">Все</option>
+            <option value="Уровень дохода не указан" {% if salary == 'Уровень дохода не указан' %}selected{% endif %}>Уровень дохода не указан</option>
+            <option value="50000" {% if salary == '50000' %}selected{% endif %}>50 000 ₽</option>
+            <option value="150000" {% if salary == '150000' %}selected{% endif %}>150 000 ₽</option>
+            <option value="200000" {% if salary == '200000' %}selected{% endif %}>200 000 ₽</option>
+        </select>
+
+        <label for="schedule">График:</label>
+        <select id="schedule" name="schedule">
+            <option value="">Все</option>
+            <option value="Полная занятость" {% if schedule == 'Полная занятость' %}selected{% endif %}>Полная занятость</option>
+            <option value="удаленная работа" {% if schedule == 'удаленная работа' %}selected{% endif %}>Удаленная работа</option>
+            <option value="Частичная занятость" {% if schedule == 'Частичная занятость' %}selected{% endif %}>Частичная занятость</option>
+        </select>
+        <button type="submit">Применить фильтр</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Зарплата</th>
+                <th>Ссылка</th>
+                <th>Опыт</th>
+                <th>График</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vacancy in vacancies_ld %}
+            <tr>
+                <td>{{ vacancy.name }}</td>
+                <td>{{ vacancy.salary }}</td>
+                <td><a href="{{ vacancy.link }}">{{ vacancy.link }}</a></td>
+                <td>{{ vacancy.job_experience }}</td>
+                <td>{{ vacancy.schedule }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
